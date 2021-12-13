@@ -100,6 +100,7 @@ export class UserResolver {
     redis.del(key);
 
     req.session.userId = user.id;
+    req.session.user = user;
 
     return {
       user,
@@ -179,6 +180,7 @@ export class UserResolver {
     }).save();
 
     req.session.userId = user.id;
+    req.session.user = user;
 
     return { user };
   }
@@ -224,6 +226,7 @@ export class UserResolver {
     }
 
     req.session.userId = user.id;
+    req.session.user = user;
 
     return { user };
   }

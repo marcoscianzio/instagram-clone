@@ -28,4 +28,4 @@ UsernamePassword = __decorate([
     type_graphql_1.InputType()
 ], UsernamePassword);
 exports.UsernamePassword = UsernamePassword;
-//# sourceMappingURL=user.js.map
+//# sourceMappingURL=User.js.map

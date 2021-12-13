@@ -91,6 +91,7 @@ let UserResolver = class UserResolver {
         await user_1.User.update({ id: parseInt(userId) }, { password: await argon2_1.default.hash(newPassword) });
         redis.del(key);
         req.session.userId = user.id;
+        req.session.user = user;
         return {
             user,
         };
@@ -139,6 +140,7 @@ let UserResolver = class UserResolver {
             password: hashedPassword,
         }).save();
         req.session.userId = user.id;
+        req.session.user = user;
         return { user };
     }
     async login(usernameOrEmail, password, { req }) {
@@ -170,6 +172,7 @@ let UserResolver = class UserResolver {
             };
         }
         req.session.userId = user.id;
+        req.session.user = user;
         return { user };
     }
     logout({ req, res }) {
