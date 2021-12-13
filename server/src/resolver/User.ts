@@ -187,26 +187,30 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("usernameOrNumberOrEmail") usernameOrNumberOrEmail: string,
     @Arg("password") password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const isEmail = usernameOrEmail.includes("@");
+    const isUsernameOrNumberOrEmail = () => {
+      if (usernameOrNumberOrEmail.includes("@")) {
+        return "email";
+      } else if (/^-?[\d.]+(?:e-?\d+)?$/.test(usernameOrNumberOrEmail)) {
+        return "number";
+      } else {
+        return "username";
+      }
+    };
 
-    const user = await User.findOne(
-      isEmail
-        ? { email: usernameOrEmail }
-        : {
-            username: usernameOrEmail,
-          }
-    );
+    const key = isUsernameOrNumberOrEmail();
+
+    const user = await User.findOne({ [key]: usernameOrNumberOrEmail });
 
     if (!user) {
       return {
         errors: [
           {
-            path: "usernameOrEmail",
-            message: `${isEmail ? "Email" : "Username"} doesn't exist`,
+            path: "usernameOrNumberOrEmail",
+            message: `${key} isn't registered`,
           },
         ],
       };

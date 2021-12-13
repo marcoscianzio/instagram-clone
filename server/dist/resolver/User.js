@@ -143,19 +143,26 @@ let UserResolver = class UserResolver {
         req.session.user = user;
         return { user };
     }
-    async login(usernameOrEmail, password, { req }) {
-        const isEmail = usernameOrEmail.includes("@");
-        const user = await user_1.User.findOne(isEmail
-            ? { email: usernameOrEmail }
-            : {
-                username: usernameOrEmail,
-            });
+    async login(usernameOrNumberOrEmail, password, { req }) {
+        const isUsernameOrNumberOrEmail = () => {
+            if (usernameOrNumberOrEmail.includes("@")) {
+                return "email";
+            }
+            else if (/^-?[\d.]+(?:e-?\d+)?$/.test(usernameOrNumberOrEmail)) {
+                return "number";
+            }
+            else {
+                return "username";
+            }
+        };
+        const key = isUsernameOrNumberOrEmail();
+        const user = await user_1.User.findOne({ [key]: usernameOrNumberOrEmail });
         if (!user) {
             return {
                 errors: [
                     {
-                        path: "usernameOrEmail",
-                        message: `${isEmail ? "Email" : "Username"} doesn't exist`,
+                        path: "usernameOrNumberOrEmail",
+                        message: `${key} isn't registered`,
                     },
                 ],
             };
@@ -227,7 +234,7 @@ __decorate([
 ], UserResolver.prototype, "register", null);
 __decorate([
     type_graphql_1.Mutation(() => UserResponse),
-    __param(0, type_graphql_1.Arg("usernameOrEmail")),
+    __param(0, type_graphql_1.Arg("usernameOrNumberOrEmail")),
     __param(1, type_graphql_1.Arg("password")),
     __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
