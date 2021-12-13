@@ -33,7 +33,7 @@ __decorate([
     type_graphql_1.Field(() => type_graphql_1.Int),
     typeorm_1.Column({ unique: true, nullable: true }),
     __metadata("design:type", Number)
-], User.prototype, "mobile", void 0);
+], User.prototype, "number", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.Column({ unique: true, nullable: true }),
