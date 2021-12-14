@@ -40,7 +40,6 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
@@ -50,7 +49,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(() => String, { nullable: true }),
     typeorm_1.Column({ nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "description", void 0);
@@ -84,6 +83,16 @@ __decorate([
     typeorm_1.Column({ type: "date" }),
     __metadata("design:type", Date)
 ], User.prototype, "birthday", void 0);
+__decorate([
+    type_graphql_1.Field(() => Boolean),
+    typeorm_1.Column({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "confirmed", void 0);
+__decorate([
+    type_graphql_1.Field(() => Boolean),
+    typeorm_1.Column({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "verified", void 0);
 __decorate([
     type_graphql_1.Field(() => Date),
     typeorm_1.Column(),

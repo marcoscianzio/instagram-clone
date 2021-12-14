@@ -33,7 +33,6 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   username: string;
 
-  @Field(() => String)
   @Column()
   password: string;
 
@@ -41,7 +40,7 @@ export class User extends BaseEntity {
   @Column()
   name: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column({ nullable: true })
   description: string;
 
@@ -68,6 +67,14 @@ export class User extends BaseEntity {
   @Field(() => Date)
   @Column({ type: "date" })
   birthday: Date;
+
+  @Field(() => Boolean)
+  @Column({ default: false })
+  confirmed: boolean;
+
+  @Field(() => Boolean)
+  @Column({ default: false })
+  verified: boolean;
 
   @Field(() => Date)
   @Column()
