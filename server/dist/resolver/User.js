@@ -122,8 +122,10 @@ let UserResolver = class UserResolver {
         catch (error) {
             return formatter_1.format(error);
         }
-        const userAlreadyExist = await user_1.User.findOne({ username: options.username });
-        if (userAlreadyExist) {
+        const usernameAlreadyExist = await user_1.User.findOne({
+            username: options.username,
+        });
+        if (usernameAlreadyExist) {
             return {
                 errors: [
                     {
@@ -133,10 +135,41 @@ let UserResolver = class UserResolver {
                 ],
             };
         }
+        const emailAlreadyExist = await user_1.User.findOne({
+            email: options.email,
+        });
+        if (emailAlreadyExist) {
+            return {
+                errors: [
+                    {
+                        path: "email",
+                        message: "email already exists",
+                    },
+                ],
+            };
+        }
+        const numberAlreadyExist = await user_1.User.findOne({
+            number: options.number,
+        });
+        if (numberAlreadyExist) {
+            return {
+                errors: [
+                    {
+                        path: "number",
+                        message: "number already exists",
+                    },
+                ],
+            };
+        }
         const hashedPassword = await argon2_1.default.hash(options.password);
         const user = await user_1.User.create({
             email: options.email,
             username: options.username,
+            number: options.number,
+            name: options.name,
+            description: options.description,
+            sex: options.sex,
+            birthday: options.birthday,
             password: hashedPassword,
         }).save();
         req.session.userId = user.id;
@@ -229,7 +262,7 @@ __decorate([
     __param(0, type_graphql_1.Arg("options")),
     __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [User_1.UsernamePassword, Object]),
+    __metadata("design:paramtypes", [User_1.RegisterInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
 __decorate([

@@ -13,7 +13,7 @@ import {
 import { v4 } from "uuid";
 import { FORGET_PASSWORD_PREFIX } from "../constants";
 import { User } from "../entity/user";
-import { UsernamePassword } from "../inputs/User";
+import { RegisterInput } from "../inputs/User";
 import { MyContext } from "../types";
 import { sendEmail } from "../utils/sendEmail";
 import { changePasswordSchema } from "../validators/changePassword";
@@ -149,7 +149,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePassword,
+    @Arg("options") options: RegisterInput,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     try {
@@ -158,9 +158,11 @@ export class UserResolver {
       return format(error);
     }
 
-    const userAlreadyExist = await User.findOne({ username: options.username });
+    const usernameAlreadyExist = await User.findOne({
+      username: options.username,
+    });
 
-    if (userAlreadyExist) {
+    if (usernameAlreadyExist) {
       return {
         errors: [
           {
@@ -171,11 +173,46 @@ export class UserResolver {
       };
     }
 
+    const emailAlreadyExist = await User.findOne({
+      email: options.email,
+    });
+
+    if (emailAlreadyExist) {
+      return {
+        errors: [
+          {
+            path: "email",
+            message: "email already exists",
+          },
+        ],
+      };
+    }
+
+    const numberAlreadyExist = await User.findOne({
+      number: options.number,
+    });
+
+    if (numberAlreadyExist) {
+      return {
+        errors: [
+          {
+            path: "number",
+            message: "number already exists",
+          },
+        ],
+      };
+    }
+
     const hashedPassword = await argon2.hash(options.password);
 
     const user = await User.create({
       email: options.email,
       username: options.username,
+      number: options.number,
+      name: options.name,
+      description: options.description,
+      sex: options.sex,
+      birthday: options.birthday,
       password: hashedPassword,
     }).save();
 

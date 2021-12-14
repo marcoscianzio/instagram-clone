@@ -1,3 +1,4 @@
+import { User } from "../entity/user";
 import * as yup from "yup";
 
 const user = {

@@ -56,11 +56,11 @@ __decorate([
 ], User.prototype, "description", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
-    typeorm_1.Column(),
-    __metadata("design:type", Number)
+    typeorm_1.Column({ enum: Sex, type: "enum" }),
+    __metadata("design:type", String)
 ], User.prototype, "sex", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(() => String, { nullable: true }),
     typeorm_1.Column({ nullable: true, type: "text" }),
     __metadata("design:type", String)
 ], User.prototype, "profile_pic", void 0);

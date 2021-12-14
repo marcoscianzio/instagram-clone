@@ -46,10 +46,10 @@ export class User extends BaseEntity {
   description: string;
 
   @Field(() => String)
-  @Column()
-  sex: Sex;
+  @Column({ enum: Sex, type: "enum" })
+  sex: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column({ nullable: true, type: "text" })
   profile_pic: string;
 
