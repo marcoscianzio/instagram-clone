@@ -115,7 +115,17 @@ let UserResolver = class UserResolver {
             return user;
         }
     }
-    async register(options, { req }) {
+    async confirmEmail(token, { redis }) {
+        const key = constants_1.CONFIRM_EMAIL_PREFIX + token;
+        const userId = await redis.get(key);
+        if (!userId) {
+            return false;
+        }
+        await user_1.User.update({ id: parseInt(userId) }, { confirmed: true });
+        await redis.del(token);
+        return true;
+    }
+    async register(options, { req, redis }) {
         try {
             await user_2.userSchema.validate(options, { abortEarly: false });
         }
@@ -162,18 +172,10 @@ let UserResolver = class UserResolver {
             };
         }
         const hashedPassword = await argon2_1.default.hash(options.password);
-        const user = await user_1.User.create({
-            email: options.email,
-            username: options.username,
-            number: options.number,
-            name: options.name,
-            description: options.description,
-            sex: options.sex,
-            birthday: options.birthday,
-            password: hashedPassword,
-        }).save();
-        req.session.userId = user.id;
-        req.session.user = user;
+        const user = await user_1.User.create(Object.assign({}, options, { password: hashedPassword })).save();
+        const token = uuid_1.v4();
+        redis.set(constants_1.CONFIRM_EMAIL_PREFIX + token, user.id, "ex", 60 * 60 * 24);
+        await sendEmail_1.sendEmail(options.email, `<a href="http://localhost:3000/confirm-email/${token}">Confirm email</a>`, "Confirm Email");
         return { user };
     }
     async login(usernameOrNumberOrEmail, password, { req }) {
@@ -210,6 +212,9 @@ let UserResolver = class UserResolver {
                     },
                 ],
             };
+        }
+        if (!user.confirmed) {
+            throw new Error("User is not confirmed");
         }
         req.session.userId = user.id;
         req.session.user = user;
@@ -257,6 +262,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "Me", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg("token")), __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "confirmEmail", null);
 __decorate([
     type_graphql_1.Mutation(() => UserResponse),
     __param(0, type_graphql_1.Arg("options")),

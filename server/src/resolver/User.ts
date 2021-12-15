@@ -11,7 +11,7 @@ import {
   Root,
 } from "type-graphql";
 import { v4 } from "uuid";
-import { FORGET_PASSWORD_PREFIX } from "../constants";
+import { CONFIRM_EMAIL_PREFIX, FORGET_PASSWORD_PREFIX } from "../constants";
 import { User } from "../entity/user";
 import { RegisterInput } from "../inputs/User";
 import { MyContext } from "../types";
@@ -147,10 +147,26 @@ export class UserResolver {
     }
   }
 
+  @Mutation(() => Boolean)
+  async confirmEmail(@Arg("token") token: string, @Ctx() { redis }: MyContext) {
+    const key = CONFIRM_EMAIL_PREFIX + token;
+
+    const userId = await redis.get(key);
+
+    if (!userId) {
+      return false;
+    }
+
+    await User.update({ id: parseInt(userId) }, { confirmed: true });
+    await redis.del(token);
+
+    return true;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: RegisterInput,
-    @Ctx() { req }: MyContext
+    @Ctx() { req, redis }: MyContext
   ): Promise<UserResponse> {
     try {
       await userSchema.validate(options, { abortEarly: false });
@@ -206,18 +222,19 @@ export class UserResolver {
     const hashedPassword = await argon2.hash(options.password);
 
     const user = await User.create({
-      email: options.email,
-      username: options.username,
-      number: options.number,
-      name: options.name,
-      description: options.description,
-      sex: options.sex,
-      birthday: options.birthday,
+      ...options,
       password: hashedPassword,
     }).save();
 
-    req.session.userId = user.id;
-    req.session.user = user;
+    const token = v4();
+
+    redis.set(CONFIRM_EMAIL_PREFIX + token, user.id, "ex", 60 * 60 * 24);
+
+    await sendEmail(
+      options.email,
+      `<a href="http://localhost:3000/confirm-email/${token}">Confirm email</a>`,
+      "Confirm Email"
+    );
 
     return { user };
   }
@@ -264,6 +281,10 @@ export class UserResolver {
           },
         ],
       };
+    }
+
+    if (!user.confirmed) {
+      throw new Error("User is not confirmed");
     }
 
     req.session.userId = user.id;
