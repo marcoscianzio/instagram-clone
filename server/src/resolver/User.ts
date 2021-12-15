@@ -166,7 +166,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: RegisterInput,
-    @Ctx() { req, redis }: MyContext
+    @Ctx() { redis }: MyContext
   ): Promise<UserResponse> {
     try {
       await userSchema.validate(options, { abortEarly: false });

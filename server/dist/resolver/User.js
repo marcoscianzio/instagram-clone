@@ -125,7 +125,7 @@ let UserResolver = class UserResolver {
         await redis.del(token);
         return true;
     }
-    async register(options, { req, redis }) {
+    async register(options, { redis }) {
         try {
             await user_2.userSchema.validate(options, { abortEarly: false });
         }
