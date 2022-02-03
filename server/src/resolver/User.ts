@@ -10,6 +10,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
+import { getConnection } from "typeorm";
 import { v4 } from "uuid";
 import { CONFIRM_EMAIL_PREFIX, FORGET_PASSWORD_PREFIX } from "../constants";
 import { User } from "../entity/user";
@@ -47,6 +48,24 @@ export class UserResolver {
     }
 
     return "";
+  }
+
+  @Query(() => User, { nullable: true })
+  async user(@Arg("username") username: string): Promise<User | undefined> {
+    const user = await getConnection()
+      .getRepository(User)
+      .createQueryBuilder("user")
+      .leftJoinAndSelect("user.posts", "post")
+      .where("user.username = :username", { username })
+      .getOne();
+
+    console.log(user);
+
+    if (!user) {
+      return undefined;
+    }
+
+    return user;
   }
 
   @Mutation(() => UserResponse)
@@ -198,7 +217,7 @@ export class UserResolver {
         errors: [
           {
             path: "email",
-            message: "email already exists",
+            message: "Email already exists",
           },
         ],
       };
@@ -213,7 +232,7 @@ export class UserResolver {
         errors: [
           {
             path: "number",
-            message: "number already exists",
+            message: "Number already exists",
           },
         ],
       };
@@ -281,10 +300,6 @@ export class UserResolver {
           },
         ],
       };
-    }
-
-    if (!user.confirmed) {
-      throw new Error("User is not confirmed");
     }
 
     req.session.userId = user.id;

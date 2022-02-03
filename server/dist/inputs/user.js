@@ -45,8 +45,8 @@ __decorate([
     __metadata("design:type", String)
 ], RegisterInput.prototype, "profile_pic", void 0);
 __decorate([
-    type_graphql_1.Field(() => Date),
-    __metadata("design:type", Date)
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
 ], RegisterInput.prototype, "birthday", void 0);
 RegisterInput = __decorate([
     type_graphql_1.InputType()

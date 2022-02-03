@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const Comment_1 = require("./Comment");
+const Post_1 = require("./Post");
 var Sex;
 (function (Sex) {
     Sex[Sex["Male"] = 0] = "Male";
@@ -77,11 +79,21 @@ __decorate([
     type_graphql_1.Field(() => type_graphql_1.Int),
     typeorm_1.Column({ default: 0 }),
     __metadata("design:type", Number)
+], User.prototype, "postCount", void 0);
+__decorate([
+    type_graphql_1.Field(() => Post_1.Post, { nullable: true }),
+    typeorm_1.OneToMany(() => Post_1.Post, (post) => post.author),
+    __metadata("design:type", Array)
 ], User.prototype, "posts", void 0);
 __decorate([
-    type_graphql_1.Field(() => Date),
+    type_graphql_1.Field(() => Comment_1.Comment, { nullable: true }),
+    typeorm_1.OneToMany(() => Comment_1.Comment, (comment) => comment.author),
+    __metadata("design:type", Array)
+], User.prototype, "comments", void 0);
+__decorate([
+    type_graphql_1.Field(() => String),
     typeorm_1.Column({ type: "date" }),
-    __metadata("design:type", Date)
+    __metadata("design:type", String)
 ], User.prototype, "birthday", void 0);
 __decorate([
     type_graphql_1.Field(() => Boolean),

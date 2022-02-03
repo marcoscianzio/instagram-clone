@@ -1,0 +1,18 @@
+fragment RegularUser on User {
+  id
+  email
+  number
+  name
+  username
+  description
+  sex
+  followers
+  profile_pic
+  following
+  postCount
+  birthday
+  confirmed
+  verified
+  created_at
+  updated_at
+}

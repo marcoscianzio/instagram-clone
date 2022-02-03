@@ -26,6 +26,6 @@ export class RegisterInput {
   @Field(() => String, { nullable: true })
   profile_pic: string;
 
-  @Field(() => Date)
-  birthday: Date;
+  @Field(() => String)
+  birthday: string;
 }

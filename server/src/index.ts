@@ -9,6 +9,7 @@ import { MyContext } from "./types";
 import Redis from "ioredis";
 import session from "express-session";
 import { UserResolver } from "./resolver/User";
+import { PostResolver } from "./resolver/Post";
 
 const main = async () => {
   await createConnection();
@@ -37,8 +38,8 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: false,
+        sameSite: "lax",
       },
       saveUninitialized: false,
       secret: "wejwqequuropñgmbvccxsise",
@@ -48,7 +49,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, PostResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({ req, res, redis }),

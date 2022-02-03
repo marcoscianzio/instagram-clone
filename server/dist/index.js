@@ -13,6 +13,7 @@ const connect_redis_1 = __importDefault(require("connect-redis"));
 const ioredis_1 = __importDefault(require("ioredis"));
 const express_session_1 = __importDefault(require("express-session"));
 const User_1 = require("./resolver/User");
+const Post_1 = require("./resolver/Post");
 const main = async () => {
     await typeorm_1.createConnection();
     const app = express_1.default();
@@ -32,8 +33,8 @@ const main = async () => {
         cookie: {
             maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            secure: false,
+            sameSite: "lax",
         },
         saveUninitialized: false,
         secret: "wejwqequuropñgmbvccxsise",
@@ -41,7 +42,7 @@ const main = async () => {
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: await type_graphql_1.buildSchema({
-            resolvers: [User_1.UserResolver],
+            resolvers: [User_1.UserResolver, Post_1.PostResolver],
             validate: false,
         }),
         context: ({ req, res }) => ({ req, res, redis }),

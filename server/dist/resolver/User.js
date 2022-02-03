@@ -17,6 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const argon2_1 = __importDefault(require("argon2"));
 const type_graphql_1 = require("type-graphql");
+const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
 const constants_1 = require("../constants");
 const user_1 = require("../entity/user");
@@ -57,6 +58,19 @@ let UserResolver = class UserResolver {
             return user.email;
         }
         return "";
+    }
+    async user(username) {
+        const user = await typeorm_1.getConnection()
+            .getRepository(user_1.User)
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.posts", "post")
+            .where("user.username = :username", { username })
+            .getOne();
+        console.log(user);
+        if (!user) {
+            return undefined;
+        }
+        return user;
     }
     async changePassword(token, newPassword, { redis, req }) {
         try {
@@ -153,7 +167,7 @@ let UserResolver = class UserResolver {
                 errors: [
                     {
                         path: "email",
-                        message: "email already exists",
+                        message: "Email already exists",
                     },
                 ],
             };
@@ -166,7 +180,7 @@ let UserResolver = class UserResolver {
                 errors: [
                     {
                         path: "number",
-                        message: "number already exists",
+                        message: "Number already exists",
                     },
                 ],
             };
@@ -213,9 +227,6 @@ let UserResolver = class UserResolver {
                 ],
             };
         }
-        if (!user.confirmed) {
-            throw new Error("User is not confirmed");
-        }
         req.session.userId = user.id;
         req.session.user = user;
         return { user };
@@ -238,6 +249,13 @@ __decorate([
     __metadata("design:paramtypes", [user_1.User, Object]),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "email", null);
+__decorate([
+    type_graphql_1.Query(() => user_1.User, { nullable: true }),
+    __param(0, type_graphql_1.Arg("username")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "user", null);
 __decorate([
     type_graphql_1.Mutation(() => UserResponse),
     __param(0, type_graphql_1.Arg("token")),

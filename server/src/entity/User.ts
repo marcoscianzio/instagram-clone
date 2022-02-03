@@ -6,7 +6,10 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { Comment } from "./Comment";
+import { Post } from "./Post";
 
 enum Sex {
   Male,
@@ -62,11 +65,19 @@ export class User extends BaseEntity {
 
   @Field(() => Int)
   @Column({ default: 0 })
-  posts: number;
+  postCount: number;
 
-  @Field(() => Date)
+  @Field(() => Post, { nullable: true })
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
+
+  @Field(() => Comment, { nullable: true })
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments: Post[];
+
+  @Field(() => String)
   @Column({ type: "date" })
-  birthday: Date;
+  birthday: string;
 
   @Field(() => Boolean)
   @Column({ default: false })
