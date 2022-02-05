@@ -6,6 +6,11 @@ fragment RegularUser on User {
   username
   description
   sex
+  posts {
+    id
+    votes
+    image
+  }
   followers
   profile_pic
   following

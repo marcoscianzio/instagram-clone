@@ -15,10 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Post_1 = require("../entity/Post");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const user_1 = require("../entity/user");
 let PostResolver = class PostResolver {
-    async getUserPosts(authorId) {
+    async userPosts(authorId) {
         const posts = await typeorm_1.getConnection()
-            .createQueryBuilder(Post_1.Post)
+            .createQueryBuilder()
+            .select("post")
+            .from(Post_1.Post, "post")
+            .innerJoinAndSelect("post.author", "user")
             .where("post.authorId = :authorId", { authorId })
             .getMany();
         if (!posts) {
@@ -26,7 +30,22 @@ let PostResolver = class PostResolver {
         }
         return posts;
     }
-    async createPost(content, image) {
+    async createPost(content, image, { req }) {
+        const post = Post_1.Post.create({
+            content,
+            image,
+            authorId: req.session.userId,
+            author: req.session.user,
+        }).save();
+        await typeorm_1.getConnection()
+            .createQueryBuilder()
+            .update(user_1.User)
+            .set({
+            postCount: () => "postCount + 1",
+        })
+            .where("id = :id", { id: req.session.userId })
+            .execute();
+        return post;
     }
 };
 __decorate([
@@ -35,17 +54,18 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], PostResolver.prototype, "getUserPosts", null);
+], PostResolver.prototype, "userPosts", null);
 __decorate([
     type_graphql_1.Mutation(() => Post_1.Post),
     __param(0, type_graphql_1.Arg("content")),
     __param(1, type_graphql_1.Arg("image")),
+    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
 PostResolver = __decorate([
-    type_graphql_1.Resolver()
+    type_graphql_1.Resolver(Post_1.Post)
 ], PostResolver);
 exports.PostResolver = PostResolver;
 //# sourceMappingURL=Post.js.map

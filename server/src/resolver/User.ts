@@ -10,7 +10,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { getConnection } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 import { v4 } from "uuid";
 import { CONFIRM_EMAIL_PREFIX, FORGET_PASSWORD_PREFIX } from "../constants";
 import { User } from "../entity/user";
@@ -55,7 +55,7 @@ export class UserResolver {
     const user = await getConnection()
       .getRepository(User)
       .createQueryBuilder("user")
-      .leftJoinAndSelect("user.posts", "post")
+      .leftJoinAndSelect("user.posts", "post", "user.id = post.authorId")
       .where("user.username = :username", { username })
       .getOne();
 
@@ -160,7 +160,11 @@ export class UserResolver {
     if (!req.session.userId) {
       return undefined;
     } else {
-      const user = await User.findOne(req.session.userId);
+      const user = await getRepository(User)
+        .createQueryBuilder("user")
+        .leftJoinAndSelect("user.posts", "post", "user.id = post.authorId")
+        .where("user.id = :userId", { userId: req.session.userId })
+        .getOne();
 
       return user;
     }

@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const Comment_1 = require("./Comment");
-const Image_1 = require("./Image");
 const user_1 = require("./user");
 let Post = class Post extends typeorm_1.BaseEntity {
 };
@@ -32,14 +31,19 @@ __decorate([
     __metadata("design:type", String)
 ], Post.prototype, "content", void 0);
 __decorate([
+    type_graphql_1.Field(() => type_graphql_1.Int),
+    typeorm_1.Column({ default: 0 }),
+    __metadata("design:type", Number)
+], Post.prototype, "votes", void 0);
+__decorate([
     type_graphql_1.Field(() => user_1.User),
     typeorm_1.ManyToOne(() => user_1.User, (user) => user.posts),
     __metadata("design:type", user_1.User)
 ], Post.prototype, "author", void 0);
 __decorate([
-    type_graphql_1.Field(() => Image_1.Image, { nullable: true }),
-    typeorm_1.OneToMany(() => Image_1.Image, (image) => image.post),
-    __metadata("design:type", Array)
+    type_graphql_1.Field(() => String),
+    typeorm_1.Column({ type: "text" }),
+    __metadata("design:type", String)
 ], Post.prototype, "image", void 0);
 __decorate([
     type_graphql_1.Field(() => Comment_1.Comment, { nullable: true }),

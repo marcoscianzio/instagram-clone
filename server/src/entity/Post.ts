@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Comment } from "./Comment";
-import { Image } from "./Image";
+// import { Image } from "./Image";
 import { User } from "./user";
 
 @ObjectType()
@@ -28,13 +28,21 @@ export class Post extends BaseEntity {
   @Column({ type: "text" })
   content: string;
 
+  @Field(() => Int)
+  @Column({ default: 0 })
+  votes: number;
+
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.posts)
   author: User;
- 
-  @Field(() => Image, { nullable: true })
-  @OneToMany(() => Image, (image) => image.post)
-  image: Image[];
+
+  @Field(() => String)
+  @Column({ type: "text" })
+  image: String;
+
+  // @Field(() => Image, { nullable: true })
+  // @OneToMany(() => Image, (image) => image.post)
+  // image: Image[];
 
   @Field(() => Comment, { nullable: true })
   @OneToMany(() => Comment, (comment) => comment.post)

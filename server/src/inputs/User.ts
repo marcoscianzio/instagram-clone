@@ -20,12 +20,12 @@ export class RegisterInput {
   @Field(() => String, { nullable: true })
   description: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   sex: string;
 
   @Field(() => String, { nullable: true })
   profile_pic: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   birthday: string;
 }

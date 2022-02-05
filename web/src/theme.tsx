@@ -119,13 +119,18 @@ const theme = extendTheme({
       variants: {
         line: {
           tablist: {
-            borderBottom: "1px solid",
-            borderColor: "instagram.border",
+            borderBottom: 0,
+            borderTop: "1px solid",
+            borderTopColor: "instagram.border",
           },
           tab: {
+            marginRight: 12,
+            borderBottom: 0,
             fontSize: "14px",
             _selected: {
-              borderColor: "black",
+              borderBottom: 0,
+              borderTopColor: "black",
+              borderTop: "1px solid",
               color: "black",
             },
             color: "instagram.darkGray",

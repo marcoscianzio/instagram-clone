@@ -47,8 +47,8 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @Field(() => String)
-  @Column({ enum: Sex, type: "enum" })
+  @Field(() => String, { nullable: true })
+  @Column({ enum: Sex, type: "enum", nullable: true })
   sex: string;
 
   @Field(() => String, { nullable: true })
@@ -67,16 +67,16 @@ export class User extends BaseEntity {
   @Column({ default: 0 })
   postCount: number;
 
-  @Field(() => Post, { nullable: true })
+  @Field(() => [Post], { nullable: true })
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
 
-  @Field(() => Comment, { nullable: true })
+  @Field(() => [Comment], { nullable: true })
   @OneToMany(() => Comment, (comment) => comment.author)
-  comments: Post[];
+  comments: Comment[];
 
-  @Field(() => String)
-  @Column({ type: "date" })
+  @Field(() => String, { nullable: true })
+  @Column({ type: "date", nullable: true })
   birthday: string;
 
   @Field(() => Boolean)

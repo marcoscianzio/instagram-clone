@@ -56,8 +56,8 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "description", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
-    typeorm_1.Column({ enum: Sex, type: "enum" }),
+    type_graphql_1.Field(() => String, { nullable: true }),
+    typeorm_1.Column({ enum: Sex, type: "enum", nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "sex", void 0);
 __decorate([
@@ -81,18 +81,18 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "postCount", void 0);
 __decorate([
-    type_graphql_1.Field(() => Post_1.Post, { nullable: true }),
+    type_graphql_1.Field(() => [Post_1.Post], { nullable: true }),
     typeorm_1.OneToMany(() => Post_1.Post, (post) => post.author),
     __metadata("design:type", Array)
 ], User.prototype, "posts", void 0);
 __decorate([
-    type_graphql_1.Field(() => Comment_1.Comment, { nullable: true }),
+    type_graphql_1.Field(() => [Comment_1.Comment], { nullable: true }),
     typeorm_1.OneToMany(() => Comment_1.Comment, (comment) => comment.author),
     __metadata("design:type", Array)
 ], User.prototype, "comments", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
-    typeorm_1.Column({ type: "date" }),
+    type_graphql_1.Field(() => String, { nullable: true }),
+    typeorm_1.Column({ type: "date", nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "birthday", void 0);
 __decorate([

@@ -63,7 +63,7 @@ let UserResolver = class UserResolver {
         const user = await typeorm_1.getConnection()
             .getRepository(user_1.User)
             .createQueryBuilder("user")
-            .leftJoinAndSelect("user.posts", "post")
+            .leftJoinAndSelect("user.posts", "post", "user.id = post.authorId")
             .where("user.username = :username", { username })
             .getOne();
         console.log(user);
@@ -125,7 +125,11 @@ let UserResolver = class UserResolver {
             return undefined;
         }
         else {
-            const user = await user_1.User.findOne(req.session.userId);
+            const user = await typeorm_1.getRepository(user_1.User)
+                .createQueryBuilder("user")
+                .leftJoinAndSelect("user.posts", "post", "user.id = post.authorId")
+                .where("user.id = :userId", { userId: req.session.userId })
+                .getOne();
             return user;
         }
     }

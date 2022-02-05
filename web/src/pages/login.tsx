@@ -15,6 +15,7 @@ import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
 import { withApollo } from "../utils/withApollo";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/dist/client/router";
+import Footer from "../components/Footer";
 
 const Login: React.FC<{}> = ({}) => {
   const [login] = useLoginMutation();
@@ -105,6 +106,7 @@ const Login: React.FC<{}> = ({}) => {
           </HStack>
         </Stack>
       </HStack>
+      <Footer />
     </Container>
   );
 };

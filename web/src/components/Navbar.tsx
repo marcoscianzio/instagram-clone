@@ -48,7 +48,12 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
         <PostIcon />
         <LikeIcon />
         <Menu size="sm">
-          <MenuButton _hover={{ cursor: "pointer" }} as={Avatar} size="sm" />
+          <MenuButton
+            _hover={{ cursor: "pointer" }}
+            as={Avatar}
+            bg="instagram.border"
+            size="sm"
+          />
           <MenuList>
             <NextLink href={`/${data.Me.username}`}>
               <MenuItem>Profile</MenuItem>

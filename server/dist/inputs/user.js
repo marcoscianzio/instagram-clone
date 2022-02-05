@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", String)
 ], RegisterInput.prototype, "description", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(() => String, { nullable: true }),
     __metadata("design:type", String)
 ], RegisterInput.prototype, "sex", void 0);
 __decorate([
@@ -45,7 +45,7 @@ __decorate([
     __metadata("design:type", String)
 ], RegisterInput.prototype, "profile_pic", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(() => String, { nullable: true }),
     __metadata("design:type", String)
 ], RegisterInput.prototype, "birthday", void 0);
 RegisterInput = __decorate([

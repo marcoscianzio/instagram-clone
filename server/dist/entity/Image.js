@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
-const Post_1 = require("./Post");
 let Image = class Image extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -29,11 +28,6 @@ __decorate([
     typeorm_1.Column({ type: "text" }),
     __metadata("design:type", String)
 ], Image.prototype, "link", void 0);
-__decorate([
-    type_graphql_1.Field(() => Post_1.Post),
-    typeorm_1.ManyToOne(() => Post_1.Post, (post) => post.image),
-    __metadata("design:type", Post_1.Post)
-], Image.prototype, "post", void 0);
 Image = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity()
