@@ -7,6 +7,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
+  RelationCount,
 } from "typeorm";
 import { Comment } from "./Comment";
 import { Post } from "./Post";
@@ -55,16 +58,31 @@ export class User extends BaseEntity {
   @Column({ nullable: true, type: "text" })
   profile_pic: string;
 
-  @Field(() => Int)
-  @Column({ default: 0 })
-  followers: number;
+  @Field(() => Boolean, { nullable: true })
+  followed: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  follower: boolean;
+
+  @Field(() => [User], { nullable: true })
+  @JoinTable()
+  @ManyToMany((type) => User, (user) => user.following)
+  followers: User[];
 
   @Field(() => Int)
-  @Column({ default: 0 })
-  following: number;
+  @RelationCount((user: User) => user.followers)
+  followersCount: number;
+
+  @Field(() => [User], { nullable: true })
+  @ManyToMany((type) => User, (user) => user.followers)
+  following: User[];
 
   @Field(() => Int)
-  @Column({ default: 0 })
+  @RelationCount((user: User) => user.following)
+  followingCount: number;
+
+  @Field(() => Int)
+  @RelationCount((user: User) => user.posts)
   postCount: number;
 
   @Field(() => [Post], { nullable: true })

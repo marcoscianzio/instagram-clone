@@ -59,14 +59,70 @@ let UserResolver = class UserResolver {
         }
         return "";
     }
+    async followed(user, { req }) {
+        if (req.session.userId == user.id || !req.session.userId) {
+            return undefined;
+        }
+        user.followers = await typeorm_1.getConnection()
+            .createQueryBuilder()
+            .relation(user_1.User, "followers")
+            .of(user)
+            .loadMany();
+        const followed = user.followers.map((element) => {
+            return element.username == req.session.user.username;
+        });
+        if (!followed[0]) {
+            return false;
+        }
+        return followed[0];
+    }
+    async follower(user, { req }) {
+        if (req.session.userId == user.id || !req.session.userId) {
+            return undefined;
+        }
+        user.following = await typeorm_1.getConnection()
+            .createQueryBuilder()
+            .relation(user_1.User, "following")
+            .of(user)
+            .loadMany();
+        const follower = user.following.map((element) => {
+            return element.username == req.session.user.username;
+        });
+        if (!follower[0]) {
+            return false;
+        }
+        return follower[0];
+    }
+    async follow(username, { req }) {
+        const transmitter = req.session.user;
+        const receptor = await user_1.User.findOne({ username });
+        try {
+            await typeorm_1.getConnection()
+                .createQueryBuilder()
+                .relation(user_1.User, "followers")
+                .of(receptor)
+                .add(transmitter);
+        }
+        catch (error) {
+            if (error.code === "ER_DUP_ENTRY") {
+                await typeorm_1.getConnection()
+                    .createQueryBuilder()
+                    .relation(user_1.User, "followers")
+                    .of(receptor)
+                    .remove(transmitter);
+            }
+        }
+        return true;
+    }
     async user(username) {
         const user = await typeorm_1.getConnection()
             .getRepository(user_1.User)
             .createQueryBuilder("user")
+            .leftJoinAndSelect("user.following", "following")
+            .leftJoinAndSelect("user.followers", "followers")
             .leftJoinAndSelect("user.posts", "post", "user.id = post.authorId")
             .where("user.username = :username", { username })
             .getOne();
-        console.log(user);
         if (!user) {
             return undefined;
         }
@@ -127,6 +183,8 @@ let UserResolver = class UserResolver {
         else {
             const user = await typeorm_1.getRepository(user_1.User)
                 .createQueryBuilder("user")
+                .leftJoinAndSelect("user.following", "following")
+                .leftJoinAndSelect("user.followers", "followers")
                 .leftJoinAndSelect("user.posts", "post", "user.id = post.authorId")
                 .where("user.id = :userId", { userId: req.session.userId })
                 .getOne();
@@ -209,7 +267,7 @@ let UserResolver = class UserResolver {
             }
         };
         const key = isUsernameOrNumberOrEmail();
-        const user = await user_1.User.findOne({ [key]: usernameOrNumberOrEmail });
+        const user = await user_1.User.findOne({ [key]: usernameOrNumberOrEmail }, { relations: ["posts", "following", "followers"] });
         if (!user) {
             return {
                 errors: [
@@ -253,6 +311,27 @@ __decorate([
     __metadata("design:paramtypes", [user_1.User, Object]),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "email", null);
+__decorate([
+    type_graphql_1.FieldResolver(() => Boolean, { nullable: true }),
+    __param(0, type_graphql_1.Root()), __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_1.User, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "followed", null);
+__decorate([
+    type_graphql_1.FieldResolver(() => Boolean, { nullable: true }),
+    __param(0, type_graphql_1.Root()), __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_1.User, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "follower", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "follow", null);
 __decorate([
     type_graphql_1.Query(() => user_1.User, { nullable: true }),
     __param(0, type_graphql_1.Arg("username")),

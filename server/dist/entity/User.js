@@ -9,6 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var User_1;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const Comment_1 = require("./Comment");
@@ -19,7 +20,7 @@ var Sex;
     Sex[Sex["Female"] = 1] = "Female";
     Sex[Sex["Other"] = 2] = "Other";
 })(Sex || (Sex = {}));
-let User = class User extends typeorm_1.BaseEntity {
+let User = User_1 = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
     type_graphql_1.Field(() => type_graphql_1.Int),
@@ -66,18 +67,37 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "profile_pic", void 0);
 __decorate([
-    type_graphql_1.Field(() => type_graphql_1.Int),
-    typeorm_1.Column({ default: 0 }),
-    __metadata("design:type", Number)
+    type_graphql_1.Field(() => Boolean, { nullable: true }),
+    __metadata("design:type", Boolean)
+], User.prototype, "followed", void 0);
+__decorate([
+    type_graphql_1.Field(() => Boolean, { nullable: true }),
+    __metadata("design:type", Boolean)
+], User.prototype, "follower", void 0);
+__decorate([
+    type_graphql_1.Field(() => [User_1], { nullable: true }),
+    typeorm_1.JoinTable(),
+    typeorm_1.ManyToMany((type) => User_1, (user) => user.following),
+    __metadata("design:type", Array)
 ], User.prototype, "followers", void 0);
 __decorate([
     type_graphql_1.Field(() => type_graphql_1.Int),
-    typeorm_1.Column({ default: 0 }),
+    typeorm_1.RelationCount((user) => user.followers),
     __metadata("design:type", Number)
+], User.prototype, "followersCount", void 0);
+__decorate([
+    type_graphql_1.Field(() => [User_1], { nullable: true }),
+    typeorm_1.ManyToMany((type) => User_1, (user) => user.followers),
+    __metadata("design:type", Array)
 ], User.prototype, "following", void 0);
 __decorate([
     type_graphql_1.Field(() => type_graphql_1.Int),
-    typeorm_1.Column({ default: 0 }),
+    typeorm_1.RelationCount((user) => user.following),
+    __metadata("design:type", Number)
+], User.prototype, "followingCount", void 0);
+__decorate([
+    type_graphql_1.Field(() => type_graphql_1.Int),
+    typeorm_1.RelationCount((user) => user.posts),
     __metadata("design:type", Number)
 ], User.prototype, "postCount", void 0);
 __decorate([
@@ -117,7 +137,7 @@ __decorate([
     typeorm_1.UpdateDateColumn(),
     __metadata("design:type", Date)
 ], User.prototype, "updated_at", void 0);
-User = __decorate([
+User = User_1 = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity()
 ], User);

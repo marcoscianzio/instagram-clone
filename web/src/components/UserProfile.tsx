@@ -13,12 +13,16 @@ import {
   SimpleGrid,
   Image,
   Box,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { isServer } from "../utils/isServer";
 import { GirdIcon } from "../icons/Grid";
 import { SavedIcon } from "../icons/Saved";
 import { TagIcon } from "../icons/Tag";
 import { useState } from "react";
+import FollowButton from "./FollowButton";
+import { withApollo } from "../utils/withApollo";
+import PostModal from "./PostModal";
 
 interface UserProfileProps {
   user?: RegularUserFragment;
@@ -40,17 +44,24 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 <Text fontSize="3xl">{user.username}</Text>
                 {data?.Me?.username === user.username ? (
                   <Button variant="secondary">Edit profile</Button>
-                ) : null}
+                ) : (
+                  <FollowButton
+                    username={user.username}
+                    followed={user.followed}
+                    follower={user.follower}
+                  />
+                )}
               </HStack>
               <HStack spacing={8}>
                 <Text fontSize="md">
-                  <b>{user.postCount}</b> post{user.postCount == 1 ? null : "s"}
+                  <b>{user?.postCount}</b> post
+                  {user?.postCount == 1 ? null : "s"}
                 </Text>
                 <Text fontSize="md">
-                  <b>{user.followers}</b> following
+                  <b>{user.followingCount}</b> following
                 </Text>
                 <Text fontSize="md">
-                  <b>{user.following}</b> followers
+                  <b>{user.followersCount}</b> followers
                 </Text>
               </HStack>
               <Text as="b" fontSize="md">
@@ -77,40 +88,57 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
             <TabPanels>
               <TabPanel>
                 <SimpleGrid columns={3} spacing={10}>
-                  {user.posts.map(({ image, votes }) => {
-                    const [isVisible, setIsVisible] = useState(false);
+                  {user?.posts?.map(
+                    (post) => {
+                      const [isVisible, setIsVisible] = useState(false);
 
-                    return (
-                      <Box position="relative" cursor="pointer">
-                        <Image
-                          _hover={{
-                            filter: "brightness(0.5)",
-                          }}
-                          src={image}
-                          h={96}
-                          objectFit="cover"
-                          onMouseEnter={() => {
-                            setIsVisible(true);
-                          }}
-                          onMouseLeave={() => {
-                            setIsVisible(false);
-                          }}
-                          w="full"
-                        />
+                      const { isOpen, onOpen, onClose } = useDisclosure();
+
+                      return (
                         <Box
-                          display={isVisible ? "block" : "none"}
-                          position="absolute"
-                          top="50%"
-                          left="50%"
-                          transform="translate(-50%,-50%)"
+                          key={post.id}
+                          position="relative"
+                          onClick={() => onOpen()}
+                          cursor="pointer"
                         >
-                          <Text fontSize="md" as="b" color="white">
-                            {votes} likes
-                          </Text>
+                          <PostModal
+                            isOpen={isOpen}
+                            onOpen={onOpen}
+                            onClose={onClose}
+                          />
+                          <Image
+                            _hover={{
+                              filter: "brightness(0.5)",
+                            }}
+                            src={post.image}
+                            h={96}
+                            objectFit="cover"
+                            onMouseEnter={() => {
+                              setIsVisible(true);
+                            }}
+                            onMouseLeave={() => {
+                              setIsVisible(false);
+                            }}
+                            w="full"
+                          />
+                          <Box
+                            display={isVisible ? "block" : "none"}
+                            position="absolute"
+                            top="50%"
+                            left="50%"
+                            transform="translate(-50%,-50%)"
+                          >
+                            <Text mr={4} fontSize="md" as="b" color="white">
+                              {post.voteCount} likes
+                            </Text>
+                            <Text fontSize="md" as="b" color="white">
+                              {post.commentCount} comments
+                            </Text>
+                          </Box>
                         </Box>
-                      </Box>
-                    );
-                  })}
+                      );
+                    }
+                  )}
                 </SimpleGrid>
               </TabPanel>
               <TabPanel>
@@ -124,4 +152,4 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   );
 };
 
-export default UserProfile;
+export default withApollo({ ssr: true })(UserProfile);

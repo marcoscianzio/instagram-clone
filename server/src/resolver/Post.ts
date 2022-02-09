@@ -2,7 +2,6 @@ import { Post } from "../entity/Post";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { getConnection } from "typeorm";
 import { MyContext } from "../types";
-import { User } from "../entity/user";
 
 @Resolver(Post)
 export class PostResolver {
@@ -37,15 +36,6 @@ export class PostResolver {
       authorId: req.session.userId,
       author: req.session.user,
     }).save();
-
-    await getConnection()
-      .createQueryBuilder()
-      .update(User)
-      .set({
-        postCount: () => "postCount + 1",
-      })
-      .where("id = :id", { id: req.session.userId })
-      .execute();
 
     return post;
   }

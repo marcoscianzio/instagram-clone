@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Post_1 = require("../entity/Post");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
-const user_1 = require("../entity/user");
 let PostResolver = class PostResolver {
     async userPosts(authorId) {
         const posts = await typeorm_1.getConnection()
@@ -37,14 +36,6 @@ let PostResolver = class PostResolver {
             authorId: req.session.userId,
             author: req.session.user,
         }).save();
-        await typeorm_1.getConnection()
-            .createQueryBuilder()
-            .update(user_1.User)
-            .set({
-            postCount: () => "postCount + 1",
-        })
-            .where("id = :id", { id: req.session.userId })
-            .execute();
         return post;
     }
 };

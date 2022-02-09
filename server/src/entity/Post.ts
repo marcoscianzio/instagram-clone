@@ -30,7 +30,11 @@ export class Post extends BaseEntity {
 
   @Field(() => Int)
   @Column({ default: 0 })
-  votes: number;
+  voteCount: number;
+
+  @Field(() => Int)
+  @Column({ default: 0 })
+  commentCount: number;
 
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.posts)

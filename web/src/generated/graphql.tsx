@@ -34,6 +34,7 @@ export type Mutation = {
   changePassword: UserResponse;
   confirmEmail: Scalars['Boolean'];
   createPost: Post;
+  follow: Scalars['Boolean'];
   forgotPassword: Scalars['Boolean'];
   login: UserResponse;
   logout: Scalars['Boolean'];
@@ -55,6 +56,11 @@ export type MutationConfirmEmailArgs = {
 export type MutationCreatePostArgs = {
   content: Scalars['String'];
   image: Scalars['String'];
+};
+
+
+export type MutationFollowArgs = {
+  username: Scalars['String'];
 };
 
 
@@ -84,12 +90,13 @@ export type Post = {
   author: User;
   authorId: Scalars['Int'];
   comment?: Maybe<Comment>;
+  commentCount: Scalars['Int'];
   content: Scalars['String'];
   created_at: Scalars['DateTime'];
   id: Scalars['Int'];
   image: Scalars['String'];
   updated_at: Scalars['DateTime'];
-  votes: Scalars['Int'];
+  voteCount: Scalars['Int'];
 };
 
 export type Query = {
@@ -129,8 +136,12 @@ export type User = {
   created_at: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   email: Scalars['String'];
-  followers: Scalars['Int'];
-  following: Scalars['Int'];
+  followed?: Maybe<Scalars['Boolean']>;
+  follower?: Maybe<Scalars['Boolean']>;
+  followers?: Maybe<Array<User>>;
+  followersCount: Scalars['Int'];
+  following?: Maybe<Array<User>>;
+  followingCount: Scalars['Int'];
   id: Scalars['Int'];
   name: Scalars['String'];
   number: Scalars['String'];
@@ -151,7 +162,14 @@ export type UserResponse = {
 
 export type RegularErrorFragment = { __typename?: 'PathError', path: string, message: string };
 
-export type RegularUserFragment = { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followers: number, profile_pic?: string | null | undefined, following: number, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, votes: number, image: string }> | null | undefined };
+export type RegularUserFragment = { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followersCount: number, followingCount: number, followed?: boolean | null | undefined, follower?: boolean | null | undefined, profile_pic?: string | null | undefined, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, voteCount: number, commentCount: number, image: string }> | null | undefined, followers?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined, following?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined };
+
+export type FollowMutationVariables = Exact<{
+  username: Scalars['String'];
+}>;
+
+
+export type FollowMutation = { __typename?: 'Mutation', follow: boolean };
 
 export type LoginMutationVariables = Exact<{
   password: Scalars['String'];
@@ -159,7 +177,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'PathError', path: string, message: string }> | null | undefined, user?: { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followers: number, profile_pic?: string | null | undefined, following: number, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, votes: number, image: string }> | null | undefined } | null | undefined } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'PathError', path: string, message: string }> | null | undefined, user?: { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followersCount: number, followingCount: number, followed?: boolean | null | undefined, follower?: boolean | null | undefined, profile_pic?: string | null | undefined, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, voteCount: number, commentCount: number, image: string }> | null | undefined, followers?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined, following?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined } | null | undefined } };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -171,19 +189,19 @@ export type RegisterMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'PathError', path: string, message: string }> | null | undefined, user?: { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followers: number, profile_pic?: string | null | undefined, following: number, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, votes: number, image: string }> | null | undefined } | null | undefined } };
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'PathError', path: string, message: string }> | null | undefined, user?: { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followersCount: number, followingCount: number, followed?: boolean | null | undefined, follower?: boolean | null | undefined, profile_pic?: string | null | undefined, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, voteCount: number, commentCount: number, image: string }> | null | undefined, followers?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined, following?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined } | null | undefined } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', Me?: { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followers: number, profile_pic?: string | null | undefined, following: number, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, votes: number, image: string }> | null | undefined } | null | undefined };
+export type MeQuery = { __typename?: 'Query', Me?: { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followersCount: number, followingCount: number, followed?: boolean | null | undefined, follower?: boolean | null | undefined, profile_pic?: string | null | undefined, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, voteCount: number, commentCount: number, image: string }> | null | undefined, followers?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined, following?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined } | null | undefined };
 
 export type UserQueryVariables = Exact<{
   username: Scalars['String'];
 }>;
 
 
-export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followers: number, profile_pic?: string | null | undefined, following: number, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, votes: number, image: string }> | null | undefined } | null | undefined };
+export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: number, email: string, number: string, name: string, username: string, description?: string | null | undefined, sex?: string | null | undefined, followersCount: number, followingCount: number, followed?: boolean | null | undefined, follower?: boolean | null | undefined, profile_pic?: string | null | undefined, postCount: number, birthday?: string | null | undefined, confirmed: boolean, verified: boolean, created_at: any, updated_at: any, posts?: Array<{ __typename?: 'Post', id: number, voteCount: number, commentCount: number, image: string }> | null | undefined, followers?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined, following?: Array<{ __typename?: 'User', id: number, username: string, followed?: boolean | null | undefined }> | null | undefined } | null | undefined };
 
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on PathError {
@@ -202,12 +220,25 @@ export const RegularUserFragmentDoc = gql`
   sex
   posts {
     id
-    votes
+    voteCount
+    commentCount
     image
   }
-  followers
+  followersCount
+  followingCount
+  followed
+  follower
+  followers {
+    id
+    username
+    followed
+  }
+  following {
+    id
+    username
+    followed
+  }
   profile_pic
-  following
   postCount
   birthday
   confirmed
@@ -216,6 +247,37 @@ export const RegularUserFragmentDoc = gql`
   updated_at
 }
     `;
+export const FollowDocument = gql`
+    mutation Follow($username: String!) {
+  follow(username: $username)
+}
+    `;
+export type FollowMutationFn = Apollo.MutationFunction<FollowMutation, FollowMutationVariables>;
+
+/**
+ * __useFollowMutation__
+ *
+ * To run a mutation, you first call `useFollowMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useFollowMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [followMutation, { data, loading, error }] = useFollowMutation({
+ *   variables: {
+ *      username: // value for 'username'
+ *   },
+ * });
+ */
+export function useFollowMutation(baseOptions?: Apollo.MutationHookOptions<FollowMutation, FollowMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<FollowMutation, FollowMutationVariables>(FollowDocument, options);
+      }
+export type FollowMutationHookResult = ReturnType<typeof useFollowMutation>;
+export type FollowMutationResult = Apollo.MutationResult<FollowMutation>;
+export type FollowMutationOptions = Apollo.BaseMutationOptions<FollowMutation, FollowMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($password: String!, $usernameOrNumberOrEmail: String!) {
   login(password: $password, usernameOrNumberOrEmail: $usernameOrNumberOrEmail) {

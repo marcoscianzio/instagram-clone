@@ -34,7 +34,12 @@ __decorate([
     type_graphql_1.Field(() => type_graphql_1.Int),
     typeorm_1.Column({ default: 0 }),
     __metadata("design:type", Number)
-], Post.prototype, "votes", void 0);
+], Post.prototype, "voteCount", void 0);
+__decorate([
+    type_graphql_1.Field(() => type_graphql_1.Int),
+    typeorm_1.Column({ default: 0 }),
+    __metadata("design:type", Number)
+], Post.prototype, "commentCount", void 0);
 __decorate([
     type_graphql_1.Field(() => user_1.User),
     typeorm_1.ManyToOne(() => user_1.User, (user) => user.posts),

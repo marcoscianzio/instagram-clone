@@ -8,12 +8,25 @@ fragment RegularUser on User {
   sex
   posts {
     id
-    votes
+    voteCount
+    commentCount
     image
   }
-  followers
+  followersCount
+  followingCount
+  followed
+  follower
+  followers {
+    id
+    username
+    followed
+  }
+  following {
+    id
+    username
+    followed
+  }
   profile_pic
-  following
   postCount
   birthday
   confirmed

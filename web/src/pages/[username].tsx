@@ -17,11 +17,9 @@ const Profile: React.FC<{}> = ({}) => {
     },
   });
 
-  console.log(data);
-
   if (loading) {
     component = null;
-  } else if (data.user) {
+  } else if (data?.user) {
     component = <UserProfile user={data.user} />;
   } else {
     component = (

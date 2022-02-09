@@ -50,16 +50,86 @@ export class UserResolver {
     return "";
   }
 
+  @FieldResolver(() => Boolean, { nullable: true })
+  async followed(@Root() user: User, @Ctx() { req }: MyContext) {
+    if (req.session.userId == user.id || !req.session.userId) {
+      return undefined;
+    }
+
+    user.followers = await getConnection()
+      .createQueryBuilder()
+      .relation(User, "followers")
+      .of(user)
+      .loadMany();
+
+    const followed = user.followers.map((element) => {
+      return element.username == req.session.user.username;
+    });
+
+    if (!followed[0]) {
+      return false;
+    }
+
+    return followed[0];
+  }
+
+  @FieldResolver(() => Boolean, { nullable: true })
+  async follower(@Root() user: User, @Ctx() { req }: MyContext) {
+    if (req.session.userId == user.id || !req.session.userId) {
+      return undefined;
+    }
+
+    user.following = await getConnection()
+      .createQueryBuilder()
+      .relation(User, "following")
+      .of(user)
+      .loadMany();
+
+    const follower = user.following.map((element) => {
+      return element.username == req.session.user.username;
+    });
+
+    if (!follower[0]) {
+      return false;
+    }
+
+    return follower[0];
+  }
+
+  @Mutation(() => Boolean)
+  async follow(@Arg("username") username: string, @Ctx() { req }: MyContext) {
+    const transmitter = req.session.user;
+    const receptor = await User.findOne({ username });
+
+    try {
+      await getConnection()
+        .createQueryBuilder()
+        .relation(User, "followers")
+        .of(receptor)
+        .add(transmitter);
+    } catch (error) {
+      if (error.code === "ER_DUP_ENTRY") {
+        await getConnection()
+          .createQueryBuilder()
+          .relation(User, "followers")
+          .of(receptor)
+          .remove(transmitter);
+      }
+    }
+
+    return true;
+  }
+
   @Query(() => User, { nullable: true })
   async user(@Arg("username") username: string): Promise<User | undefined> {
     const user = await getConnection()
       .getRepository(User)
       .createQueryBuilder("user")
+      .leftJoinAndSelect("user.following", "following")
+      .leftJoinAndSelect("user.followers", "followers")
       .leftJoinAndSelect("user.posts", "post", "user.id = post.authorId")
       .where("user.username = :username", { username })
       .getOne();
-
-    console.log(user);
 
     if (!user) {
       return undefined;
@@ -162,6 +232,8 @@ export class UserResolver {
     } else {
       const user = await getRepository(User)
         .createQueryBuilder("user")
+        .leftJoinAndSelect("user.following", "following")
+        .leftJoinAndSelect("user.followers", "followers")
         .leftJoinAndSelect("user.posts", "post", "user.id = post.authorId")
         .where("user.id = :userId", { userId: req.session.userId })
         .getOne();
@@ -280,7 +352,10 @@ export class UserResolver {
 
     const key = isUsernameOrNumberOrEmail();
 
-    const user = await User.findOne({ [key]: usernameOrNumberOrEmail });
+    const user = await User.findOne(
+      { [key]: usernameOrNumberOrEmail },
+      { relations: ["posts", "following", "followers"] }
+    );
 
     if (!user) {
       return {

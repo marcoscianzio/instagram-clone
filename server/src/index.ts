@@ -52,7 +52,11 @@ const main = async () => {
       resolvers: [UserResolver, PostResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ req, res, redis }),
+    context: ({ req, res }): MyContext => ({
+      req,
+      res,
+      redis,
+    }),
   });
 
   await apolloServer.start();
