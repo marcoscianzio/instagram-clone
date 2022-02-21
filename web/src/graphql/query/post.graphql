@@ -1,0 +1,8 @@
+query Post($postId: String!) {
+  post(id: $postId) {
+    ...RegularPost
+  }
+  postComments(postId: $postId) {
+    ...RegularComment
+  }
+}

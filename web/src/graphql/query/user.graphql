@@ -1,0 +1,41 @@
+query User($id: String!) {
+  user(id: $id) {
+    id
+    email
+    displayName
+    commentCount
+    postCount
+    posts {
+      id
+      images {
+        url
+        id
+      }
+      isArrayOfImages
+      description
+      commentCount
+      likeCount
+      createdAt
+    }
+    followers {
+      displayName
+      id
+      followed
+      isMe
+    }
+    following {
+      displayName
+      id
+      followed
+      isMe
+    }
+    likeCount
+    followed
+    follower
+    followersCount
+    followingCount
+    isMe
+    createdAt
+    updatedAt
+  }
+}

@@ -1,0 +1,23 @@
+fragment RegularPost on Post {
+  id
+  userId
+  images {
+    id
+    url
+  }
+  description
+  commentCount
+  createdAt
+  updatedAt
+  likes {
+    ...RegularLike
+  }
+  likeCount
+  liked
+  isArrayOfImages
+  user {
+    ...RegularUser
+    followed
+    follower
+  }
+}

@@ -1,0 +1,9 @@
+mutation CreateComment($values: CommentInput!) {
+  createComment(values: $values) {
+    id
+    postId
+    userId
+    createdAt
+    updatedAt
+  }
+}

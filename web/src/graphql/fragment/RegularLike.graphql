@@ -1,0 +1,9 @@
+fragment RegularLike on Like {
+  id
+  user {
+    displayName
+    id
+    followed
+    isMe
+  }
+}

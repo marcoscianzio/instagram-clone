@@ -1,0 +1,27 @@
+fragment RegularComment on Comment {
+  id
+  postId
+  content
+  childrenCount
+  userId
+  repliedUserId
+  repliedUser {
+    id
+    email
+    displayName
+    isMe
+    createdAt
+    updatedAt
+  }
+  parentCommentId
+  likeCount
+  liked
+  likes {
+    ...RegularLike
+  }
+  user {
+    ...RegularUser
+  }
+  createdAt
+  updatedAt
+}

@@ -1,0 +1,9 @@
+fragment ComplexUser on User {
+  ...RegularUser
+  postCount
+  likeCount
+  follower
+  followed
+  followersCount
+  followingCount
+}

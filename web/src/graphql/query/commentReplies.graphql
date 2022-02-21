@@ -1,0 +1,5 @@
+query CommentReplies($parentCommentId: String!, $postId: String!) {
+  commentReplies(parentCommentId: $parentCommentId, postId: $postId) {
+    ...RegularComment
+  }
+}

@@ -1,0 +1,6 @@
+mutation Like($targetId: String!, $type: String!) {
+  like(targetId: $targetId, type: $type) {
+    id
+    userId
+  }
+}
