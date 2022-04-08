@@ -6,12 +6,14 @@
 ### `server`
 ```
 cd server
+yarn
 yarn watch
 yarn dev
 ```
 ### `web`
 ```
-cd wen
+cd web
+yarn
 yarn dev
 ```
 
